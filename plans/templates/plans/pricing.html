@@ -1,0 +1,73 @@
+{% extends 'accounts/base_auth.html' %}
+
+{% block title %}Тарифы — Convert{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/pricing.css">
+{% endblock %}
+
+{% block main_extra_class %}auth-main-wide{% endblock %}
+
+{% block content %}
+<div class="pricing-page">
+    <h1 class="pricing-title">Тарифы</h1>
+    <p class="pricing-subtitle">PRO доступен только после регистрации (без оплаты)</p>
+
+    <div class="pricing-grid">
+        {% for plan in plans %}
+        <div class="pricing-card {% if plan.is_pro_plan %}pricing-card-featured{% endif %}">
+            <div class="pricing-card-header">
+                <span class="pricing-name">{{ plan.name }}</span>
+
+                {% if plan.is_pro_plan %}
+                    {% if user.is_authenticated %}
+                        <span class="pricing-badge pricing-badge-active">PRO</span>
+                    {% endif %}
+                {% else %}
+                    <span class="pricing-badge">FREE</span>
+                {% endif %}
+            </div>
+
+            {% if plan.is_pro_plan %}
+                <p class="plan-price">—</p>
+                {% if user.is_authenticated %}
+                    <span class="pricing-cta pricing-cta-disabled">Активен</span>
+                {% else %}
+                    <a href="{% url 'register' %}" class="pricing-cta pricing-cta-primary">Зарегистрироваться для PRO</a>
+                {% endif %}
+            {% else %}
+                <p class="plan-price">Бесплатно</p>
+                <span class="pricing-cta pricing-cta-disabled">FREE для гостей</span>
+            {% endif %}
+
+            <ul class="pricing-features">
+                {% if plan.limits %}
+                    {% if plan.limits.conversions_per_day %}
+                        <li><strong>Конвертаций в день:</strong> {{ plan.limits.conversions_per_day }}</li>
+                    {% endif %}
+                    {% if plan.limits.max_file_size_mb %}
+                        <li><strong>Макс. размер файла:</strong> {{ plan.limits.max_file_size_mb }} МБ</li>
+                    {% endif %}
+                    {% if plan.limits.available_formats %}
+                        <li>
+                            <strong>Доступные форматы:</strong>
+                            {% if plan.limits.available_formats == 'all' %}
+                                Все форматы
+                            {% else %}
+                                {{ plan.limits.available_formats }}
+                            {% endif %}
+                        </li>
+                    {% endif %}
+                {% else %}
+                    <li>Без ограничений</li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+
+    <p class="pricing-footer">
+        <a href="/">← Вернуться к конвертеру</a>
+    </p>
+</div>
+{% endblock %}

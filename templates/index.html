@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convert — Мульти-конвертер файлов</title>
+    <script>
+        (function(){var t=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',t);})();
+    </script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="header-inner">
+                <a href="/" class="logo">
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="12" y1="18" x2="12" y2="12"/>
+                        <line x1="9" y1="15" x2="15" y2="15"/>
+                    </svg>
+                    <span>Convert</span>
+                </a>
+                <nav class="auth-nav">
+                    <button type="button" class="theme-toggle" onclick="toggleTheme()" title="Переключить тему" aria-label="Переключить тему">
+                        <svg class="icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"/>
+                            <line x1="12" y1="1" x2="12" y2="3"/>
+                            <line x1="12" y1="21" x2="12" y2="23"/>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                            <line x1="1" y1="12" x2="3" y2="12"/>
+                            <line x1="21" y1="12" x2="23" y2="12"/>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                        </svg>
+                        <svg class="icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                        </svg>
+                    </button>
+                    <a href="{% url 'pricing' %}" class="auth-link">Тарифы</a>
+                    {% if user.is_authenticated %}
+                        <span class="auth-user">{{ user.username }}</span>
+                        <a href="{% url 'logout' %}" class="auth-link">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="auth-link">Login</a>
+                        <a href="{% url 'register' %}" class="auth-link auth-link-primary">Register</a>
+                    {% endif %}
+                </nav>
+            </div>
+        </header>
+
+        <main class="main">
+            <h1 class="title">Конвертируйте файлы в любой формат</h1>
+            <p class="subtitle">Изображения, аудио, видео, документы и архивы</p>
+
+            <div class="converter-card">
+                <!-- Drop zone -->
+                <div class="drop-zone" id="dropZone">
+                    <input type="file" id="fileInput" class="file-input" accept="*/*">
+                    <div class="drop-content" id="dropContent">
+                        <svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        <p class="drop-text">Перетащите файл сюда</p>
+                        <p class="drop-sub">или</p>
+                        <button type="button" class="btn-primary" id="chooseBtn">Выбрать файл</button>
+                    </div>
+                </div>
+
+                <!-- File info & conversion -->
+                <div class="conversion-panel hidden" id="conversionPanel">
+                    <div class="file-info" id="fileInfo">
+                        <div class="file-icon-wrap">
+                            <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                        </div>
+                        <div class="file-details">
+                            <span class="file-name" id="fileName">—</span>
+                            <span class="file-format" id="fileFormat">—</span>
+                        </div>
+                        <button type="button" class="btn-remove" id="removeBtn" title="Удалить">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="target-select" id="targetSelect">
+                        <label for="targetFormat">Конвертировать в</label>
+                        <select id="targetFormat" class="select-format">
+                            <option value="">Выберите формат</option>
+                        </select>
+                    </div>
+
+                    <div class="progress-wrap hidden" id="progressWrap">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <span class="progress-text" id="progressText">Загрузка...</span>
+                    </div>
+
+                    <button type="button" class="btn-convert" id="convertBtn" disabled>
+                        <span class="btn-text">Конвертировать</span>
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"/>
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                        </svg>
+                    </button>
+
+                    <div class="result-wrap hidden" id="resultWrap">
+                        <div class="result-success">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            <span>Готово! Файл загружен</span>
+                        </div>
+                        <button type="button" class="btn-download" id="downloadBtn">Скачать</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="error-toast hidden" id="errorToast">
+                <span id="errorText"></span>
+            </div>
+
+            <div class="limit-modal hidden" id="limitModal">
+                <div class="limit-modal-content">
+                    <h3 class="limit-modal-title">Достигнут лимит</h3>
+                    <p class="limit-modal-text" id="limitModalText"></p>
+                    <div class="limit-modal-actions">
+                        <a href="{% url 'register' %}" class="btn-primary">Зарегистрироваться</a>
+                        <a href="{% url 'pricing' %}" class="limit-modal-link">Посмотреть тарифы</a>
+                    </div>
+                    <button type="button" class="limit-modal-close" id="limitModalClose">Закрыть</button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-inner">
+                <p>Поддержка: изображения, аудио, видео, документы, архивы</p>
+                <button type="button" class="theme-toggle" onclick="toggleTheme()" title="Переключить тему" aria-label="Переключить тему">
+                    <svg class="icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <svg class="icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/static/theme.js"></script>
+    <script>
+        // CSRF token for Django
+        function getCsrfToken() {
+            const cookie = document.cookie.match(/csrftoken=([^;]+)/);
+            return cookie ? cookie[1] : '';
+        }
+    </script>
+    <script src="/static/main.js"></script>
+</body>
+</html>

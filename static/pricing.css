@@ -1,0 +1,164 @@
+/* Pricing page — SaaS-style */
+
+.pricing-page {
+    width: 100%;
+    max-width: 960px;
+}
+
+.pricing-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.pricing-subtitle {
+    color: var(--text-muted);
+    margin: 0 0 2rem;
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.pricing-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.pricing-card-featured {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+}
+
+.pricing-card-header {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pricing-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.pricing-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    background: var(--accent);
+    color: white;
+    border-radius: 4px;
+}
+
+.pricing-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+    flex: 1;
+}
+
+.pricing-features li {
+    padding: 0.35rem 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.pricing-features li::before {
+    content: '✓ ';
+    color: var(--success);
+    font-weight: 600;
+}
+
+.pricing-cta {
+    display: block;
+    text-align: center;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all var(--transition);
+}
+
+.pricing-cta-primary {
+    background: var(--accent);
+    color: white;
+}
+
+.pricing-cta-primary:hover {
+    background: var(--accent-hover);
+}
+
+.pricing-cta-secondary {
+    background: var(--bg-hover);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.pricing-cta-secondary:hover {
+    border-color: var(--border-hover);
+}
+
+.pricing-cta-disabled {
+    background: var(--bg-hover);
+    color: var(--text-muted);
+    cursor: default;
+}
+
+.pricing-footer {
+    margin-top: 2rem;
+}
+
+.pricing-footer a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.pricing-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Pricing responsive */
+@media (max-width: 1200px) {
+    .pricing-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .pricing-page {
+        padding: 0 0.5rem;
+    }
+    .pricing-title {
+        font-size: 1.4rem;
+    }
+    .pricing-subtitle {
+        margin-bottom: 1.5rem;
+    }
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    .pricing-card {
+        padding: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .pricing-title {
+        font-size: 1.2rem;
+    }
+    .pricing-card {
+        padding: 1rem;
+    }
+    .pricing-name {
+        font-size: 1.1rem;
+    }
+}
